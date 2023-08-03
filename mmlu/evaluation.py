@@ -61,14 +61,16 @@ def evaluate_results(result_dir: Path,
     if subjects is not None:
         subject_to_file = {s: f for s, f in subject_to_file.items() if s in subjects}
 
-    out_rows = []
     print('--------------------------\nAccuracy by subject:')
+    out_rows = []
     for subject in sorted(subject_to_file.keys()):
         result_df = pd.read_csv(subject_to_file[subject], sep=',', encoding='utf-8')
         true_pos = get_true_pos(result_df)
-        acc = sum(true_pos) / len(result_df)
+        num_labels = len(get_pred(result_df))
+        acc = sum(true_pos) / max(num_labels, 1)
         out_rows.append({'subject': subject, 'true_pos': sum(true_pos),
-                         'num_labels': len(result_df), 'accuracy': acc,})
+                         'num_labels': num_labels, 'accuracy': acc})
+        print(f'{subject}: {acc}')
 
     sum_true_pos = sum(row['true_pos'] for row in out_rows)
     sum_labels = sum(row['num_labels'] for row in out_rows)
@@ -79,6 +81,10 @@ def evaluate_results(result_dir: Path,
     if out_file is not None:
         out_df = pd.DataFrame(out_rows)
         out_df.to_csv(out_file, sep=',', encoding='utf-8')
+
+
+def get_pred(result_df: pd.DataFrame) -> List[bool]:
+    return [p for p in result_df['prediction'] if len(str(p)) == 1]
 
 
 def get_true_pos(result_df: pd.DataFrame) -> List[bool]:

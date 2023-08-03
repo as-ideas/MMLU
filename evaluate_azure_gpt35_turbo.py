@@ -23,20 +23,22 @@ def predict_azure_gpt_35_turbo(prompt: str) -> str:
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0,
-        # Logit biases for tokens [' A', ' B', ' C', ' D']
-        logit_bias={362: 100, 426: 100, 356: 100, 423: 100},
+        # Logit biases for tokens [' A', ' B', ' C', ' D', 'A', 'B', 'C', 'D']
+        logit_bias={362: 100, 426: 100, 356: 100, 423: 100,
+                    32: 100, 33: 100, 34: 100, 35: 100},
         stop=None)
-    return response['choices'][0]['message']['content']
+    pred = response['choices'][0]['message']['content'].replace(' ', '')
+    return pred
 
 
 if __name__ == '__main__':
     data_dir = Path('/Users/cschaefe/datasets/nlp/mmlu/data')
-    result_dir = Path(f'results/azure_gpt_35_turbo')
+    result_dir = Path(f'results/azure_gpt_35_turbo_logit_bias2')
 
     predict_dataset(data_dir=data_dir,
                     result_dir=result_dir,
                     predict_function=predict_azure_gpt_35_turbo,
-                    subjects=['anatomy', 'world_religions'],
+                    subjects=['anatomy'],
                     k_shot=0,
                     n_workers=2,
                     timeout_s=50,
