@@ -32,9 +32,14 @@ class Dataset:
         return Dataset(test_file=test_file, dev_file=dev_file, subject=subject)
 
 
+def file_to_subject(file: Path) -> str:
+    extension = file.stem.split('_')[-1]
+    return file.stem.replace(f'_{extension}', '')
+
+
 def get_subjects(data_dir: Path) -> List[str]:
-    files = (data_dir / 'test').glob('**/*.csv')
-    subjects = [f.stem.replace('_test', '') for f in files]
+    files = list((data_dir / 'test').glob('**/*.csv'))
+    subjects = [file_to_subject(f) for f in files]
     return sorted(subjects)
 
 
@@ -56,14 +61,13 @@ def get_label(dataset: Dataset, index: int) -> str:
 
 def read_or_create_result_df(result_file: Path, dataset: Dataset) -> pd.DataFrame:
     try:
-        result_df = pd.read_csv(result_file, sep=',', encoding='utf-8')
+        result_df = pd.read_csv(result_file, sep=',', encoding='utf-8', dtype=str, keep_default_na=False)
     except Exception as e:
         labels = [get_label(dataset, i) for i in range(len(dataset))]
-        rows = [{'label': label, 'prediction': None} for label in labels]
-        result_df = pd.DataFrame(rows)
-        result_df.to_csv(result_file, sep=',', encoding='utf-8')
+        rows = [{'label': label, 'prediction': ''} for label in labels]
+        result_df = pd.DataFrame(rows, dtype=str)
+        result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
     return result_df
-
 
 
 def _format_question(df: pd.DataFrame,
