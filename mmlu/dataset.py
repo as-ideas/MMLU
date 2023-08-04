@@ -49,7 +49,7 @@ def gen_prompt(dataset: Dataset,
     subject = _format_subject(dataset.subject)
     prompt = f'{PROMPT} {subject}.\n\n'
     for k in range(k_shot):
-        example = _format_question(dataset.dev_df, index, include_answer=True)
+        example = _format_question(dataset.dev_df, k, include_answer=True)
         prompt += example
     question = _format_question(dataset.test_df, index, include_answer=False)
     prompt += question
