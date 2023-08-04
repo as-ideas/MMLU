@@ -50,14 +50,14 @@ def predict_dataset(data_dir: Path,
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
         tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))
-        print(f'Correct: {tp}/{pred}, accuracy: {get_accuracy(result_df):#.3}')
+        print(f'Accuracy: {get_accuracy(result_df):#.3} ({tp}/{pred}, )')
 
 
 def evaluate_results(result_dir: Path,
                      subjects: Optional[List[str]] = None,
                      out_file: Optional[Path] = None) -> None:
 
-    result_files = result_dir.glob('**/*.csv')
+    result_files = result_dir.glob('**/*_result.csv')
     subject_to_file = {file_to_subject(f): f for f in result_files}
     if subjects is not None:
         subject_to_file = {s: f for s, f in subject_to_file.items() if s in subjects}

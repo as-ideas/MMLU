@@ -21,7 +21,6 @@ class PredictionWithTimeout:
             func_result = self._func(prompt)
 
         for retry in range(self._retries):
-            #print(id(self), 'retry: ', retry)
             thread = threading.Thread(target=run_func)
             thread.start()
             thread.join(self._timeout_s)

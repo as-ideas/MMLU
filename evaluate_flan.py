@@ -1,64 +1,53 @@
-import os
-import torch
-import numpy as np
+import argparse
 from pathlib import Path
+from typing import Callable
 
-import openai
-
-from mmlu.evaluation import predict_dataset, evaluate_results
-
-openai.api_type = 'azure'
-openai.api_version = '2023-03-15-preview'
-openai.api_base = os.getenv('OPENAI_API_BASE')
-openai.api_key = os.getenv('OPENAI_API_KEY')
-
+import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-model = AutoModelForSeq2SeqLM.from_pretrained('google/flan-t5-small')
-tokenizer = AutoTokenizer.from_pretrained('google/flan-t5-small')
-model.eval()
+from mmlu.dataset import CHOICES
+from mmlu.evaluation import predict_dataset, evaluate_results
 
 
-def predict_flan(prompt: str) -> str:
-    input_ids = tokenizer(prompt, return_tensors="pt").input_ids
+class FlanPredictor(Callable[[str], str]):
 
-    decoder_input_ids = tokenizer("", return_tensors="pt").input_ids
-    decoder_input_ids = model._shift_right(decoder_input_ids)
-    logits = model(
-        input_ids=input_ids, decoder_input_ids=decoder_input_ids
-    ).logits.flatten()
+    def __init__(self, engine: str) -> None:
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(engine)
+        self._tokenizer = AutoTokenizer.from_pretrained(engine)
+        self._model.eval()
+        self._choice_tokens = [self._tokenizer(c).input_ids[0] for c in CHOICES]
+        self._choice_tokens = torch.tensor(self._choice_tokens).long()
 
-    probs = (
-        torch.nn.functional.softmax(
-            torch.tensor(
-                [
-                    logits[tokenizer("A").input_ids[0]],
-                    logits[tokenizer("B").input_ids[0]],
-                    logits[tokenizer("C").input_ids[0]],
-                    logits[tokenizer("D").input_ids[0]],
-                ]
-            ),
-            dim=0,
-        )
-            .detach()
-            .cpu()
-            .numpy()
-    )
-    pred = {0: "A", 1: "B", 2: "C", 3: "D"}[np.argmax(probs)]
-    return pred
+    def __call__(self, prompt: str) -> str:
+        input_ids = self._tokenizer(prompt, return_tensors="pt").input_ids
+        decoder_input_ids = self._tokenizer("", return_tensors="pt").input_ids
+        decoder_input_ids = self._model._shift_right(decoder_input_ids)
+        logits = self._model(
+            input_ids=input_ids, decoder_input_ids=decoder_input_ids
+        ).logits.flatten()
+        logits = logits[self._choice_tokens]
+        pred_index = torch.argmax(logits)
+        pred = CHOICES[int(pred_index)]
+        return pred
 
 
 if __name__ == '__main__':
-    data_dir = Path('/Users/cschaefe/datasets/nlp/mmlu/data')
-    result_dir = Path(f'results/flan_small')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', type=str, default='data')
+    parser.add_argument('--result_dir', type=str, default='results/flan')
+    parser.add_argument('--k_shot', type=int, default=0, help='The number of few-shot examples in the prompt.')
+    parser.add_argument('--engine', type=str, default='google/flan-t5-small')
+    args = parser.parse_args()
+    print(args)
 
-    predict_dataset(data_dir=data_dir,
-                    result_dir=result_dir,
-                    predict_function=predict_flan,
-                    #subjects=['human_sexuality'],
+    predict_function = FlanPredictor(engine=args.engine)
+
+    predict_dataset(data_dir=Path(args.data_dir),
+                    result_dir=Path(args.result_dir),
+                    predict_function=predict_function,
                     k_shot=0,
                     n_workers=0,
                     timeout_s=0,
                     retries=0)
 
-    evaluate_results(result_dir=result_dir, out_file=Path('/tmp/chatgpt.csv'))
+    evaluate_results(result_dir=Path(args.result_dir))
