@@ -50,7 +50,7 @@ def predict_dataset(data_dir: Path,
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
         tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))
-        print(f'Correct: {tp}/{pred}, accuracy: {get_accuracy(result_df):#.2}')
+        print(f'Correct: {tp}/{pred}, accuracy: {get_accuracy(result_df):#.3}')
 
 
 def evaluate_results(result_dir: Path,
@@ -71,7 +71,7 @@ def evaluate_results(result_dir: Path,
         acc = sum(true_pos) / max(num_labels, 1)
         out_rows.append({'subject': subject, 'true_pos': sum(true_pos),
                          'num_labels': num_labels, 'accuracy': acc})
-        print(f'{subject}: {acc:#.2}')
+        print(f'{subject}: {acc:#.3}')
 
     sum_true_pos = sum(row['true_pos'] for row in out_rows)
     sum_labels = sum(row['num_labels'] for row in out_rows)

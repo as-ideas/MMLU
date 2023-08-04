@@ -55,7 +55,7 @@ if __name__ == '__main__':
     predict_dataset(data_dir=data_dir,
                     result_dir=result_dir,
                     predict_function=predict_flan,
-                    subjects=['human_sexuality'],
+                    #subjects=['human_sexuality'],
                     k_shot=0,
                     n_workers=0,
                     timeout_s=0,
