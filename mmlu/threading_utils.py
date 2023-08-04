@@ -21,12 +21,15 @@ class PredictionWithTimeout:
             func_result = self._func(prompt)
 
         for retry in range(self._retries):
-            thread = threading.Thread(target=run_func)
-            thread.start()
-            thread.join(self._timeout_s)
-            if func_result is not None:
-                result = func_result
-                break
+            try:
+                thread = threading.Thread(target=run_func)
+                thread.start()
+                thread.join(self._timeout_s)
+                if func_result is not None:
+                    result = func_result
+                    break
+            except Exception as e:
+                pass
 
         if result is None:
             raise RuntimeError(f'Max retries ({self._retries}) reached!')
