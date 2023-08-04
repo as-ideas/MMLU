@@ -1,4 +1,3 @@
-import unittest
 import os
 import unittest
 from pathlib import Path
@@ -16,7 +15,7 @@ class TestDataset(unittest.TestCase):
     def setUp(self) -> None:
         test_path = os.path.dirname(os.path.abspath(__file__))
         self.resources_path = Path(test_path) / 'resources'
-        self.data_path = Path(test_path) / 'resources' / 'test_data'
+        self.data_path = Path(test_path) / 'resources' / 'en_test_data'
         self.test_file = self.data_path / 'test' / 'astronomy_test.csv'
         self.dev_file = self.data_path / 'dev' / 'astronomy_dev.csv'
 

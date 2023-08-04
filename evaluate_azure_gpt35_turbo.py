@@ -38,7 +38,7 @@ if __name__ == '__main__':
     predict_dataset(data_dir=data_dir,
                     result_dir=result_dir,
                     predict_function=predict_azure_gpt_35_turbo,
-                    subjects=['anatomy'],
+                    subjects=['anatomy', 'astronomy', 'business_ethics'],
                     k_shot=0,
                     n_workers=2,
                     timeout_s=50,
