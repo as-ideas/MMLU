@@ -50,7 +50,7 @@ def predict_dataset(data_dir: Path,
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
         tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))
-        print(f'Accuracy: {get_accuracy(result_df):#.3} ({tp}/{pred}, )')
+        print(f'Accuracy: {get_accuracy(result_df):#.3} ({tp}/{pred})')
 
 
 def evaluate_results(result_dir: Path,
