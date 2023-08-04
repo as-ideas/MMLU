@@ -24,7 +24,7 @@ def predict_dataset(data_dir: Path,
         subjects = get_subjects(data_dir)
 
     for subject_index, subject in enumerate(subjects):
-        print(f'--------------------\n{subject_index}/{len(subjects)}: {subject}')
+        print(f'--------------------\nPredict {subject_index}/{len(subjects)}: {subject}')
         dataset = Dataset.from_dir(data_dir=data_dir, subject=subject)
         result_file = result_dir / f'{subject}_result.csv'
         result_df = read_or_create_result_df(result_file, dataset)
@@ -49,7 +49,8 @@ def predict_dataset(data_dir: Path,
                 result_df.loc[index, 'prediction'] = pred
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
-        print(f'Accuracy: {get_accuracy(result_df)}')
+        tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))
+        print(f'Correct: {tp}/{pred}, accuracy: {get_accuracy(result_df):#.2}')
 
 
 def evaluate_results(result_dir: Path,
@@ -70,13 +71,13 @@ def evaluate_results(result_dir: Path,
         acc = sum(true_pos) / max(num_labels, 1)
         out_rows.append({'subject': subject, 'true_pos': sum(true_pos),
                          'num_labels': num_labels, 'accuracy': acc})
-        print(f'{subject}: {acc}')
+        print(f'{subject}: {acc:#.2}')
 
     sum_true_pos = sum(row['true_pos'] for row in out_rows)
     sum_labels = sum(row['num_labels'] for row in out_rows)
-    mean_acc = sum_true_pos / sum_labels
+    micro_avg_acc = sum_true_pos / sum_labels
 
-    print(f'---------------------\nMean accuracy: {mean_acc}')
+    print(f'---------------------\nMicro-averaged accuracy: {micro_avg_acc:#.2}')
 
     if out_file is not None:
         out_df = pd.DataFrame(out_rows)
