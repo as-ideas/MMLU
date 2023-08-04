@@ -22,7 +22,7 @@ class TestEvaluate(unittest.TestCase):
     def setUp(self) -> None:
         test_path = os.path.dirname(os.path.abspath(__file__))
         self.resources_path = Path(test_path) / 'resources'
-        self.data_path = Path(test_path) / 'resources' / 'test_data'
+        self.data_path = Path(test_path) / 'resources' / 'en_test_data'
         self.temp_dir = TemporaryDirectory(prefix='TestEvaluateTmpDir')
 
     def tearDown(self) -> None:
@@ -35,12 +35,12 @@ class TestEvaluate(unittest.TestCase):
         # predict without concurrency
         predict_dataset(data_dir=self.data_path,
                         result_dir=result_dir,
-                        subjects=['astronomy'],
+                        subjects=['astronomy_for_testing'],
                         predict_function=mock_predict_func,
                         k_shot=0,
                         n_workers=0)
 
-        results_df = pd.read_csv(result_dir / 'astronomy_result.csv')
+        results_df = pd.read_csv(result_dir / 'astronomy_for_testing_result.csv')
 
         labels = results_df['label'].tolist()
         self.assertEqual(['A', 'D', 'C', 'C', 'D'], labels)
@@ -55,12 +55,12 @@ class TestEvaluate(unittest.TestCase):
         # predict without concurrency
         predict_dataset(data_dir=self.data_path,
                         result_dir=result_dir,
-                        subjects=['astronomy'],
+                        subjects=['astronomy_for_testing'],
                         predict_function=mock_predict_func,
                         k_shot=0,
                         n_workers=2)
 
-        results_df = pd.read_csv(result_dir / 'astronomy_result.csv')
+        results_df = pd.read_csv(result_dir / 'astronomy_for_testing_result.csv')
 
         labels = results_df['label'].tolist()
         self.assertEqual(['A', 'D', 'C', 'C', 'D'], labels)

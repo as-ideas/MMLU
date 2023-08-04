@@ -46,7 +46,8 @@ def get_subjects(data_dir: Path) -> List[str]:
 def gen_prompt(dataset: Dataset,
                index: int,
                k_shot: int = 0):
-    prompt = f'{PROMPT} {dataset.subject}.\n\n'
+    subject = _format_subject(dataset.subject)
+    prompt = f'{PROMPT} {subject}.\n\n'
     for k in range(k_shot):
         example = _format_question(dataset.dev_df, index, include_answer=True)
         prompt += example
@@ -61,11 +62,12 @@ def get_label(dataset: Dataset, index: int) -> str:
 
 def read_or_create_result_df(result_file: Path, dataset: Dataset) -> pd.DataFrame:
     try:
-        result_df = pd.read_csv(result_file, sep=',', encoding='utf-8', dtype=str, keep_default_na=False)
+        result_df = pd.read_csv(result_file, sep=',', encoding='utf-8', dtype=str,
+                                keep_default_na=False)
     except Exception as e:
-        labels = [get_label(dataset, i) for i in range(len(dataset))]
-        rows = [{'label': label, 'prediction': ''} for label in labels]
-        result_df = pd.DataFrame(rows, dtype=str)
+        result_df = dataset.test_df.copy(deep=True)
+        result_df.columns = ['prompt', 'A', 'B', 'C', 'D', 'label']
+        result_df['prediction'] = ''
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
     return result_df
 
@@ -80,3 +82,7 @@ def _format_question(df: pd.DataFrame,
     if include_answer:
         prompt += f' {df.iloc[index, len(CHOICES)+1]}\n\n'
     return prompt
+
+
+def _format_subject(subject: str) -> str:
+    return subject.replace('_', ' ')

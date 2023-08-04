@@ -1,4 +1,4 @@
-The following are multiple choice questions (with answers) about astronomy.
+The following are multiple choice questions (with answers) about astronomy for testing.
 
 You are pushing a truck along a road. Would it be easier to accelerate this truck on Mars? Why? (Assume there is no friction)
 A. It would be harder since the truck is heavier on Mars.

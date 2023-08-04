@@ -16,11 +16,11 @@ class TestDataset(unittest.TestCase):
         test_path = os.path.dirname(os.path.abspath(__file__))
         self.resources_path = Path(test_path) / 'resources'
         self.data_path = Path(test_path) / 'resources' / 'en_test_data'
-        self.test_file = self.data_path / 'test' / 'astronomy_test.csv'
-        self.dev_file = self.data_path / 'dev' / 'astronomy_dev.csv'
+        self.test_file = self.data_path / 'test' / 'astronomy_for_testing_test.csv'
+        self.dev_file = self.data_path / 'dev' / 'astronomy_for_testing_dev.csv'
 
     def test_create_from_dir(self):
-        dataset = Dataset.from_dir(self.data_path, 'astronomy')
+        dataset = Dataset.from_dir(self.data_path, 'astronomy_for_testing')
         self.assertEqual(5, len(dataset.test_df))
         self.assertEqual(5, len(dataset.dev_df))
         self.assertEqual('Why is the sky blue?', dataset.test_df.iloc[2, 0])
@@ -29,7 +29,7 @@ class TestDataset(unittest.TestCase):
     def test_gen_prompt(self):
         dataset = Dataset(test_file=self.test_file,
                           dev_file=self.dev_file,
-                          subject='astronomy')
+                          subject='astronomy_for_testing')
 
         prompt_k0 = gen_prompt(dataset, index=0, k_shot=0)
         expected_k0 = read_txt(self.resources_path / 'astronomy_prompt_k0_expected.txt')
