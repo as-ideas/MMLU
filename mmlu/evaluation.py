@@ -45,8 +45,6 @@ def predict_dataset(data_dir: Path,
             pool.terminate()
         elif len(prompt_jobs) > 0 and n_workers == 0:
             for prompt, index in tqdm(prompt_jobs, total=len(prompt_jobs)):
-                if index == 91:
-                    print(prompt)
                 pred = predict_function(prompt)
                 result_df.loc[index, 'prediction'] = pred
 
