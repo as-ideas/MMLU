@@ -34,7 +34,7 @@ class FlanPredictor(Callable[[str], str]):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='data')
-    parser.add_argument('--result_dir', type=str, default='results/flan_small_new')
+    parser.add_argument('--result_dir', type=str, default='results/flan_small')
     parser.add_argument('--k_shot', type=int, default=0, help='The number of few-shot examples in the prompt.')
     parser.add_argument('--engine', type=str, default='google/flan-t5-small')
     args = parser.parse_args()
