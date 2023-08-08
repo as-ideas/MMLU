@@ -9,6 +9,9 @@ from mmlu.dataset import get_subjects, Dataset, gen_prompt, read_or_create_resul
 from mmlu.threading_utils import PredictionWithTimeout, PredictionWorker
 
 
+SAVE_STEPS = 50
+
+
 def predict_dataset(data_dir: Path,
                     result_dir: Path,
                     predict_function: Callable[[str], str],
@@ -39,14 +42,18 @@ def predict_dataset(data_dir: Path,
         if len(prompt_jobs) > 0 and n_workers > 0:
             prediction_worker = PredictionWorker(predict_function)
             pool = Pool(processes=n_workers)
-            for pred, index in tqdm(pool.imap_unordered(prediction_worker, prompt_jobs),
-                                    total=len(prompt_jobs)):
+            for j, (pred, index) in enumerate(tqdm(pool.imap_unordered(prediction_worker, prompt_jobs),
+                                    total=len(prompt_jobs))):
                 result_df.loc[index, 'prediction'] = pred
+                if (j + 1) % SAVE_STEPS == 0:
+                    result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
             pool.terminate()
         elif len(prompt_jobs) > 0 and n_workers == 0:
-            for prompt, index in tqdm(prompt_jobs, total=len(prompt_jobs)):
+            for j, (prompt, index) in enumerate(tqdm(prompt_jobs, total=len(prompt_jobs))):
                 pred = predict_function(prompt)
                 result_df.loc[index, 'prediction'] = pred
+                if (j + 1) % SAVE_STEPS == 0:
+                    result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
         tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))

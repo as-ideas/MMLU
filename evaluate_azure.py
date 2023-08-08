@@ -41,11 +41,11 @@ class AzurePredictor(Callable[[str], str]):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='data')
-    parser.add_argument('--result_dir', type=str, default='results/azure')
+    parser.add_argument('--result_dir', type=str, default='results/azure_gpt35_turbo_0shot')
     parser.add_argument('--engine', type=str, default='gpt-35-turbo',
                         help='The engine to use. Choices: [gpt-35-turbo, gpt-4]')
     parser.add_argument('--k_shot', type=int, default=0, help='The number of few-shot examples in the prompt.')
-    parser.add_argument('--n_workers', type=int, default=2, help='The number of worker threads to use for api calls.')
+    parser.add_argument('--n_workers', type=int, default=0, help='The number of worker threads to use for api calls.')
     parser.add_argument('--timeout', type=float, default=60, help='The timeout for api calls in seconds.')
     parser.add_argument('--retries', type=int, default=3, help='The number of retries.')
     args = parser.parse_args()
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     predict_dataset(data_dir=Path(args.data_dir),
                     result_dir=Path(args.result_dir),
                     predict_function=predict_function,
-                    k_shot=0,
+                    k_shot=args.k_shot,
                     n_workers=args.n_workers,
                     timeout_s=50,
                     retries=3)
