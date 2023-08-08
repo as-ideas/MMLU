@@ -45,8 +45,8 @@ if __name__ == '__main__':
     parser.add_argument('--engine', type=str, default='gpt-35-turbo',
                         help='The engine to use. Choices: [gpt-35-turbo, gpt-4]')
     parser.add_argument('--k_shot', type=int, default=0, help='The number of few-shot examples in the prompt.')
-    parser.add_argument('--n_workers', type=int, default=0, help='The number of worker threads to use for api calls.')
-    parser.add_argument('--timeout', type=float, default=60, help='The timeout for api calls in seconds.')
+    parser.add_argument('--n_workers', type=int, default=2, help='The number of worker threads to use for api calls.')
+    parser.add_argument('--timeout', type=float, default=360, help='The timeout for api calls in seconds.')
     parser.add_argument('--retries', type=int, default=3, help='The number of retries.')
     args = parser.parse_args()
     print(args)
