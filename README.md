@@ -32,7 +32,7 @@ python evaluate_azure.py --data_dir path-to-data --result_dir path-to-results --
 
 ## Evaluate your custom model <a id="evaluate-custom"></a>
 
-You can easily implement evaluation of any custom language model. Simply use the following template and replace the predict_function by your own callable:
+You can easily evaluate your custom language model. Simply use the following template and replace the predict_function by your own callable:
 
 ```python
 from pathlib import Path
