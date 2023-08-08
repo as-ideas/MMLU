@@ -39,6 +39,18 @@ class TestDataset(unittest.TestCase):
         expected_k1 = read_txt(self.resources_path / 'astronomy_prompt_k1_expected.txt')
         self.assertEqual(expected_k1, prompt_k1)
 
+        prompt_k5 = gen_prompt(dataset, index=0, k_shot=5)
+        expected_k5 = read_txt(self.resources_path / 'astronomy_prompt_k5_expected.txt')
+        self.assertEqual(expected_k5, prompt_k5)
+
+        # Below we set a token limit for the prompt of 1300 characters, so some of the k-shot examples should
+        # be excluded for the prompt to fit the token limit
+        prompt_k5_max100 = gen_prompt(dataset, index=0, k_shot=5, max_tokens=1300,
+                                      token_counter=lambda x: len(x))
+        expected_k5_max100 = read_txt(self.resources_path / 'astronomy_prompt_k5_maxtokens1300_expected.txt')
+        self.assertEqual(expected_k5_max100, prompt_k5_max100)
+
+
     def test_get_label(self):
         dataset = Dataset(test_file=self.test_file,
                           dev_file=self.dev_file,

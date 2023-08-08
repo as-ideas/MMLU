@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Callable
 
 import pandas as pd
 
@@ -43,15 +43,31 @@ def get_subjects(data_dir: Path) -> List[str]:
     return sorted(subjects)
 
 
+def standard_token_counter(prompt: str) -> int:
+    return len(prompt) * 4
+
+
 def gen_prompt(dataset: Dataset,
                index: int,
-               k_shot: int = 0):
+               k_shot: int = 0,
+               token_counter: Callable[[str], int] = None,
+               max_tokens: Optional[int] = None):
+    if token_counter is None:
+        token_counter = standard_token_counter
     subject = _format_subject(dataset.subject)
     prompt = f'{PROMPT} {subject}.\n\n'
+    question = _format_question(dataset.test_df, index, include_answer=False)
+    sum_tokens = token_counter(prompt) + token_counter(question) + 1
+
+    # add training examples if enough tokens are left
     for k in range(k_shot):
         example = _format_question(dataset.dev_df, k, include_answer=True)
+        sum_tokens += token_counter(example)
+        print(k, sum_tokens)
+        if max_tokens is not None and sum_tokens >= max_tokens:
+            break
         prompt += example
-    question = _format_question(dataset.test_df, index, include_answer=False)
+
     prompt += question
     return prompt
 

@@ -19,7 +19,9 @@ def predict_dataset(data_dir: Path,
                     k_shot: int = 0,
                     n_workers: int = 0,
                     timeout_s: int = 50,
-                    retries: int = 3):
+                    retries: int = 3,
+                    token_counter: Optional[Callable[[str], int]] = None,
+                    max_tokens: Optional[int] = None):
 
     result_dir.mkdir(parents=True, exist_ok=True)
 
@@ -31,8 +33,11 @@ def predict_dataset(data_dir: Path,
         dataset = Dataset.from_dir(data_dir=data_dir, subject=subject)
         result_file = result_dir / f'{subject}_result.csv'
         result_df = read_or_create_result_df(result_file, dataset)
-        prompts = [gen_prompt(dataset, i, k_shot=k_shot) for i in range(len(dataset))]
-        prompt_jobs = [(p, i) for i, p in enumerate(prompts) if len(result_df.loc[i, 'prediction']) != 1]
+        prompts = [gen_prompt(dataset=dataset, index=i, k_shot=k_shot,
+                              token_counter=token_counter, max_tokens=max_tokens)
+                   for i in range(len(dataset))]
+        prompt_jobs = [(p, i) for i, p in enumerate(prompts)
+                       if len(result_df.loc[i, 'prediction']) != 1]
 
         if timeout_s > 0 and retries > 0:
             predict_function = PredictionWithTimeout(func=predict_function,
