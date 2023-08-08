@@ -1,6 +1,6 @@
 # MMLU Repository
 
-This repository contains code for running the **MMLU** (Massive Multitask Language Understanding) evaluation of large language models.
+This repository contains code for running the [MMLU](https://arxiv.org/abs/2009.03300) (Massive Multitask Language Understanding) evaluation of large language models.
 It is recoded from scratch following the logic of the [original repo](https://github.com/hendrycks/test) with following imrovements:
 
 - **Accellerated inference**: Using multithreaded API calls.
@@ -54,3 +54,6 @@ if __name__ == '__main__':
 ```
 
 
+## References
+
+* [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
