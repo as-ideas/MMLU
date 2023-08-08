@@ -1,4 +1,4 @@
-# MMLU Repository
+# MMLU Evaluation
 
 This repository contains code for running the [MMLU](https://arxiv.org/abs/2009.03300) (Massive Multitask Language Understanding) evaluation of large language models.
 It is recoded from scratch following the logic of the [original repo](https://github.com/hendrycks/test) with following imrovements:
