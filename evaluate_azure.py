@@ -34,7 +34,7 @@ class AzurePredictor(Callable[[str], str]):
             logit_bias={362: 100, 426: 100, 356: 100, 423: 100,
                         32: 100, 33: 100, 34: 100, 35: 100},
             stop=None)
-        pred = response['choices'][0]['message']['content'].replace(' ', '')
+        pred = response['choices'][0]['message']['content'].replace(' ', '')[0]
         return pred
 
 
