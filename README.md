@@ -3,15 +3,15 @@
 This repository contains code for the **MMLU** (Machine Learning Model Utilization) project, which focuses on evaluating of LLMs. 
 
 ## Setup
-Download the dataset [here](https://people.eecs.berkeley.edu/~hendrycks/data.tar)
+1. Download the dataset [here](https://people.eecs.berkeley.edu/~hendrycks/data.tar)
 
-Install the required dependencies:
+2. Install the required dependencies:
 
 ```bash
-pip install openai argparse
+pip install -r requirements.txt
 ```
 
-Ensure you have the necessary environment variables if you want to use OpenAI or Azure models. E.g. for Azure:
+3. Ensure you have the necessary environment variables if you want to use OpenAI or Azure models. E.g. for Azure:
 ```bash
 export OPENAI_API_BASE=https://your-azure-endpoint.com 
 export OPENAI_API_KEY=your-azure-key
