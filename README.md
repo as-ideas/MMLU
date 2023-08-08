@@ -1,6 +1,11 @@
 # MMLU Repository
 
-This repository contains code for the **MMLU** (Machine Learning Model Utilization) project, which focuses on evaluating of LLMs. 
+This repository contains code for running the **MMLU** (Massive Multitask Language Understanding) evaluation of large language models.
+It is recoded from scratch following the logic of the [original repo](https://github.com/hendrycks/test) with following imrovements:
+
+- **Accellerated inference** with multiprocessing
+- **Enhanced stability** using timeouts and retries for API calls
+- **Modularity**: you can easily evaluate your custom LLM (see [Evaluate your custom model](#evaluate-custom))
 
 ## Setup
 1. Download the dataset [here](https://people.eecs.berkeley.edu/~hendrycks/data.tar)
@@ -25,7 +30,7 @@ Run the evaluation code. The results are stored as *.csv files in the given dire
 python evaluate_azure.py --data_dir path-to-data --result_dir path-to-results --k_shot 0
 ```
 
-## Evaluating your custom model
+## Evaluate your custom model <a id="evaluate-custom"></a>
 
 You can easily implement evaluation of any custom language model. Simply use the following template and replace the predict_function by your own callable:
 
