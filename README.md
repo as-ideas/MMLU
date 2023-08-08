@@ -3,9 +3,9 @@
 This repository contains code for running the **MMLU** (Massive Multitask Language Understanding) evaluation of large language models.
 It is recoded from scratch following the logic of the [original repo](https://github.com/hendrycks/test) with following imrovements:
 
-- **Accellerated inference**: using multithreaded API calls
-- **Enhanced stability**: added timeouts and retries for API calls
-- **Modularity**: you can easily evaluate your custom LLM (see [Evaluate your custom model](#evaluate-custom))
+- **Accellerated inference**: Using multithreaded API calls.
+- **Enhanced stability**: Added timeouts and retries for API calls.
+- **Modularity**: You can easily evaluate your custom LLM (see [Evaluate your custom model](#evaluate-custom)).
 
 ## Setup
 1. Download the dataset [here](https://people.eecs.berkeley.edu/~hendrycks/data.tar)
