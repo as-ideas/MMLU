@@ -44,6 +44,9 @@ def get_subjects(data_dir: Path) -> List[str]:
 
 
 def standard_token_counter(prompt: str) -> int:
+    """
+    Estimates the number of tokens for a prompt as 4 * (number of characters)
+    """
     return len(prompt) * 4
 
 
@@ -52,6 +55,28 @@ def gen_prompt(dataset: Dataset,
                k_shot: int = 0,
                token_counter: Callable[[str], int] = None,
                max_tokens: Optional[int] = None):
+    """
+    Generates a prompt for a given index from the dataset.
+
+    Args:
+        dataset (Dataset): The Dataset object containing the data.
+        index (int): The index of the example for which to generate the prompt.
+        k_shot (int, optional): The number of training examples (k-shot) to include in the prompt. Defaults to 0.
+        token_counter (Callable[[str], int], optional): A callable function that takes a string as input and returns
+                                                        the number of tokens in it. If None, the number of tokens
+                                                        will be estimated by len(prompt) * 4. Defaults to None.
+        max_tokens (Optional[int], optional): The maximum number of tokens allowed in the generated prompt.
+                                              If the total tokens exceed this limit, the prompt will be truncated.
+                                              Defaults to None.
+
+    Returns:
+        str: The generated prompt as a string.
+
+    Note:
+        This function constructs a prompt by concatenating the subject, a question, and additional k-shot
+        training examples (if provided).
+    """
+
     if token_counter is None:
         token_counter = standard_token_counter
     subject = _format_subject(dataset.subject)
@@ -63,7 +88,6 @@ def gen_prompt(dataset: Dataset,
     for k in range(k_shot):
         example = _format_question(dataset.dev_df, k, include_answer=True)
         sum_tokens += token_counter(example)
-        print(k, sum_tokens)
         if max_tokens is not None and sum_tokens >= max_tokens:
             break
         prompt += example

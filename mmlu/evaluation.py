@@ -22,6 +22,29 @@ def predict_dataset(data_dir: Path,
                     retries: int = 3,
                     token_counter: Optional[Callable[[str], int]] = None,
                     max_tokens: Optional[int] = None):
+    """
+    Performs model predictions over the dataset and stores the result in a dataframe.
+
+    Args:
+        data_dir (Path): The directory containing the dataset files.
+        result_dir (Path): The directory where prediction results will be stored.
+        predict_function (Callable[[str], str]): A callable function that takes a prompt
+                                                 string as input and returns the prediction as a string.
+        subjects (Optional[List[str]], optional): A list of subjects from the dataset to be used for prediction.
+                                                  If None, all subjects in the dataset will be used. Defaults to None.
+        k_shot (int, optional): The number of examples for k-shot learning. Defaults to 0.
+        n_workers (int, optional): The number of worker processes to use for parallel prediction.
+                                   If 0, prediction will be done in the main thread. Defaults to 0.
+        timeout_s (int, optional): The timeout in seconds for each prediction job. Defaults to 50.
+        retries (int, optional): The number of times to retry a timed-out prediction job. Defaults to 3.
+        token_counter (Optional[Callable[[str], int]], optional): A callable function that takes a prompt string as
+                                                                  input and returns the number of tokens in it.
+                                                                  Defaults to None.
+        max_tokens (Optional[int], optional): The maximum number of tokens allowed in a prompt. Defaults to None.
+
+    Returns:
+        None: The function doesn't return any value directly, but saves the prediction results to the result_dir.
+    """
 
     result_dir.mkdir(parents=True, exist_ok=True)
 
@@ -68,6 +91,21 @@ def predict_dataset(data_dir: Path,
 def evaluate_results(result_dir: Path,
                      subjects: Optional[List[str]] = None,
                      out_file: Optional[Path] = None) -> None:
+    """
+    Evaluates the prediction results stored in result_dir and calculate accuracy metrics.
+
+    Args:
+        result_dir (Path): The directory containing the prediction result files in CSV format (e.g., *_result.csv).
+        subjects (Optional[List[str]], optional): A list of subjects for which to evaluate the results.
+                                                  If None, all subjects found in result_dir will be evaluated.
+                                                  Defaults to None.
+        out_file (Optional[Path], optional): The file path where the evaluation results will be saved as a CSV file.
+                                             If None, the evaluation results will only be printed on the console.
+                                             Defaults to None.
+
+    Returns:
+        None: The function doesn't return any value directly but may save the evaluation results to out_file if provided.
+    """
 
     result_files = result_dir.glob('**/*_result.csv')
     subject_to_file = {file_to_subject(f): f for f in result_files}

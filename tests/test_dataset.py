@@ -50,7 +50,6 @@ class TestDataset(unittest.TestCase):
         expected_k5_max100 = read_txt(self.resources_path / 'astronomy_prompt_k5_maxtokens1300_expected.txt')
         self.assertEqual(expected_k5_max100, prompt_k5_max100)
 
-
     def test_get_label(self):
         dataset = Dataset(test_file=self.test_file,
                           dev_file=self.dev_file,
