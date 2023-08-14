@@ -58,7 +58,7 @@ if __name__ == '__main__':
                     predict_function=predict_function,
                     k_shot=args.k_shot,
                     n_workers=args.n_workers,
-                    timeout_s=50,
-                    retries=3)
+                    timeout_s=args.timeout,
+                    retries=args.retries)
 
     evaluate_results(result_dir=Path(args.result_dir))
