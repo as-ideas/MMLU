@@ -14,22 +14,20 @@ class Dataset:
     dev_df: pd.DataFrame
     test_df: pd.DataFrame
 
-    def __init__(self,
-                 test_file: Path,
-                 dev_file: Path,
-                 subject: str) -> None:
-        self.subject = subject
-        self.test_df = pd.read_csv(test_file, header=None, sep=',', encoding='utf-8')
-        self.dev_df = pd.read_csv(dev_file, header=None, sep=',', encoding='utf-8')
-
     def __len__(self):
         return len(self.test_df)
 
     @classmethod
+    def from_files(cls, test_file: Path, dev_file: Path, subject: str) -> 'Dataset':
+        dev_df = pd.read_csv(dev_file, header=None, sep=',', encoding='utf-8')
+        test_df = pd.read_csv(test_file, header=None, sep=',', encoding='utf-8')
+        return Dataset(subject=subject, dev_df=dev_df, test_df=test_df)
+
+    @classmethod
     def from_dir(cls, data_dir: Path, subject: str) -> 'Dataset':
-        test_file = Path(data_dir / 'test' / f'{subject}_test.csv')
         dev_file = Path(data_dir / 'dev' / f'{subject}_dev.csv')
-        return Dataset(test_file=test_file, dev_file=dev_file, subject=subject)
+        test_file = Path(data_dir / 'test' / f'{subject}_test.csv')
+        return Dataset.from_files(dev_file=dev_file, test_file=test_file, subject=subject)
 
 
 def file_to_subject(file: Path) -> str:
@@ -45,9 +43,9 @@ def get_subjects(data_dir: Path) -> List[str]:
 
 def standard_token_counter(prompt: str) -> int:
     """
-    Estimates the number of tokens for a prompt as 4 * (number of characters)
+    Estimates the number of tokens for a prompt as number of characters) // 4
     """
-    return len(prompt) * 4
+    return len(prompt) // 4
 
 
 def gen_prompt(dataset: Dataset,
