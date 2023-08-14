@@ -72,7 +72,7 @@ def predict_dataset(data_dir: Path,
             prediction_worker = PredictionWorker(predict_function)
             pool = Pool(processes=n_workers)
             for j, (pred, index) in enumerate(tqdm(pool.imap_unordered(prediction_worker, prompt_jobs),
-                                    total=len(prompt_jobs))):
+                                                   total=len(prompt_jobs))):
                 result_df.loc[index, 'prediction'] = pred
                 if (j + 1) % SAVE_STEPS == 0:
                     result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
@@ -85,7 +85,7 @@ def predict_dataset(data_dir: Path,
                     result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
-        acc = accuracy_score(result_df['prediction'], result_df['label'])
+        acc = accuracy_score(y_true=result_df['label'], y_pred=result_df['prediction'])
         true_pos = sum(result_df['prediction'] == result_df['label'])
         num_labels = len(result_df['label'])
 
@@ -120,7 +120,7 @@ def evaluate_results(result_dir: Path,
     out_rows = []
     for subject in sorted(subject_to_file.keys()):
         result_df = pd.read_csv(subject_to_file[subject], sep=',', encoding='utf-8')
-        acc = accuracy_score(result_df['prediction'], result_df['label'])
+        acc = accuracy_score(y_true=result_df['label'], y_pred=result_df['prediction'])
         true_pos = sum(result_df['prediction'] == result_df['label'])
         num_labels = len(result_df['label'])
         out_rows.append({'subject': subject, 'true_pos': true_pos,
