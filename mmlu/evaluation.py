@@ -4,7 +4,6 @@ from typing import Callable, List, Optional
 from sklearn.metrics import accuracy_score
 
 import pandas as pd
-import sklearn.metrics
 from tqdm import tqdm
 
 from mmlu.dataset import get_subjects, Dataset, gen_prompt, read_or_create_result_df, file_to_subject
