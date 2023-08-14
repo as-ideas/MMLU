@@ -38,6 +38,8 @@ def file_to_subject(file: Path) -> str:
 def get_subjects(data_dir: Path) -> List[str]:
     files = list((data_dir / 'test').glob('**/*.csv'))
     subjects = [file_to_subject(f) for f in files]
+    if len(subjects) == 0:
+        raise ValueError(f'No test files found in: {data_dir}')
     return sorted(subjects)
 
 
