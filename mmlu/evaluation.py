@@ -127,7 +127,7 @@ def evaluate_results(result_dir: Path,
     sum_labels = sum(row['num_labels'] for row in out_rows)
     micro_avg_acc = sum_true_pos / sum_labels
 
-    print(f'---------------------\nMicro-averaged accuracy: {micro_avg_acc:#.2}')
+    print(f'---------------------\nMicro-averaged accuracy: {micro_avg_acc:#.3}')
 
     if out_file is not None:
         out_df = pd.DataFrame(out_rows)
