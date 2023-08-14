@@ -61,10 +61,10 @@ def gen_prompt(dataset: Dataset,
     Args:
         dataset (Dataset): The Dataset object containing the data.
         index (int): The index of the example for which to generate the prompt.
-        k_shot (int, optional): The number of training examples (k-shot) to include in the prompt. Defaults to 0.
+        k_shot (int): The number of training examples (k-shot) to include in the prompt. Defaults to 0.
         token_counter (Callable[[str], int], optional): A callable function that takes a string as input and returns
                                                         the number of tokens in it. If None, the number of tokens
-                                                        will be estimated by len(prompt) * 4. Defaults to None.
+                                                        will be estimated by len(prompt) // 4. Defaults to None.
         max_tokens (int, optional): The maximum number of tokens allowed in the generated prompt.
                                     If the total tokens exceed this limit, the prompt will be truncated.
                                     Defaults to None.

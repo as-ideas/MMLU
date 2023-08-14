@@ -31,9 +31,9 @@ def predict_dataset(data_dir: Path,
         predict_function (Callable[[str], str]): A callable function that takes a prompt
                                                  string as input and returns the prediction as a string.
         k_shot (int): The number of examples for k-shot learning. Defaults to 0.
-        n_workers (int, optional): The number of worker processes to use for parallel prediction.
+        n_workers (int): The number of worker processes to use for parallel prediction.
                                    If 0, prediction will be done in the main thread. Defaults to 0.
-        timeout_s (int, optional): The timeout in seconds for each prediction job. Defaults to 50.
+        timeout_s (int): The timeout in seconds for each prediction job. Defaults to 50.
         retries (int): The number of times to retry a timed-out prediction job. Defaults to 3.
         subjects (List[str], optional): A list of subjects from the dataset to be used for prediction.
                                         If None, all subjects in the dataset will be used. Defaults to None.
