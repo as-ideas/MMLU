@@ -1,6 +1,7 @@
 from multiprocessing import Pool
 from pathlib import Path
 from typing import Callable, List, Optional
+from sklearn.metrics import accuracy_score
 
 import pandas as pd
 from tqdm import tqdm
@@ -15,11 +16,11 @@ SAVE_STEPS = 50
 def predict_dataset(data_dir: Path,
                     result_dir: Path,
                     predict_function: Callable[[str], str],
-                    subjects: Optional[List[str]] = None,
                     k_shot: int = 0,
                     n_workers: int = 0,
                     timeout_s: int = 50,
                     retries: int = 3,
+                    subjects: Optional[List[str]] = None,
                     token_counter: Optional[Callable[[str], int]] = None,
                     max_tokens: Optional[int] = None):
     """
@@ -30,17 +31,17 @@ def predict_dataset(data_dir: Path,
         result_dir (Path): The directory where prediction results will be stored.
         predict_function (Callable[[str], str]): A callable function that takes a prompt
                                                  string as input and returns the prediction as a string.
-        subjects (Optional[List[str]], optional): A list of subjects from the dataset to be used for prediction.
-                                                  If None, all subjects in the dataset will be used. Defaults to None.
-        k_shot (int, optional): The number of examples for k-shot learning. Defaults to 0.
-        n_workers (int, optional): The number of worker processes to use for parallel prediction.
+        k_shot (int): The number of examples for k-shot learning. Defaults to 0.
+        n_workers (int): The number of worker processes to use for parallel prediction.
                                    If 0, prediction will be done in the main thread. Defaults to 0.
-        timeout_s (int, optional): The timeout in seconds for each prediction job. Defaults to 50.
-        retries (int, optional): The number of times to retry a timed-out prediction job. Defaults to 3.
-        token_counter (Optional[Callable[[str], int]], optional): A callable function that takes a prompt string as
-                                                                  input and returns the number of tokens in it.
-                                                                  Defaults to None.
-        max_tokens (Optional[int], optional): The maximum number of tokens allowed in a prompt. Defaults to None.
+        timeout_s (int): The timeout in seconds for each prediction job. Defaults to 50.
+        retries (int): The number of times to retry a timed-out prediction job. Defaults to 3.
+        subjects (List[str], optional): A list of subjects from the dataset to be used for prediction.
+                                        If None, all subjects in the dataset will be used. Defaults to None.
+        token_counter (Callable[[str], int], optional): A callable function that takes a prompt string as
+                                                        input and returns the number of tokens in it.
+                                                        Defaults to None.
+        max_tokens (int, optional): The maximum number of tokens allowed in a prompt. Defaults to None.
 
     Returns:
         None: The function doesn't return any value directly, but saves the prediction results to the result_dir.
@@ -71,7 +72,7 @@ def predict_dataset(data_dir: Path,
             prediction_worker = PredictionWorker(predict_function)
             pool = Pool(processes=n_workers)
             for j, (pred, index) in enumerate(tqdm(pool.imap_unordered(prediction_worker, prompt_jobs),
-                                    total=len(prompt_jobs))):
+                                                   total=len(prompt_jobs))):
                 result_df.loc[index, 'prediction'] = pred
                 if (j + 1) % SAVE_STEPS == 0:
                     result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
@@ -84,8 +85,11 @@ def predict_dataset(data_dir: Path,
                     result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
-        tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))
-        print(f'Accuracy: {get_accuracy(result_df):#.3} ({tp}/{pred})')
+        acc = accuracy_score(y_true=result_df['label'], y_pred=result_df['prediction'])
+        true_pos = sum(result_df['prediction'] == result_df['label'])
+        num_labels = len(result_df['label'])
+
+        print(f'Accuracy: {acc:#.3} ({true_pos}/{num_labels})')
 
 
 def evaluate_results(result_dir: Path,
@@ -96,12 +100,12 @@ def evaluate_results(result_dir: Path,
 
     Args:
         result_dir (Path): The directory containing the prediction result files in CSV format (e.g., *_result.csv).
-        subjects (Optional[List[str]], optional): A list of subjects for which to evaluate the results.
-                                                  If None, all subjects found in result_dir will be evaluated.
-                                                  Defaults to None.
-        out_file (Optional[Path], optional): The file path where the evaluation results will be saved as a CSV file.
-                                             If None, the evaluation results will only be printed on the console.
-                                             Defaults to None.
+        subjects (List[str], optional): A list of subjects for which to evaluate the results.
+                                        If None, all subjects found in result_dir will be evaluated.
+                                        Defaults to None.
+        out_file (Path, optional): The file path where the evaluation results will be saved as a CSV file.
+                                   If None, the evaluation results will only be printed on the console.
+                                   Defaults to None.
 
     Returns:
         None: The function doesn't return any value directly but may save the evaluation results to out_file if provided.
@@ -116,10 +120,10 @@ def evaluate_results(result_dir: Path,
     out_rows = []
     for subject in sorted(subject_to_file.keys()):
         result_df = pd.read_csv(subject_to_file[subject], sep=',', encoding='utf-8')
-        true_pos = get_true_pos(result_df)
-        num_labels = len(get_pred(result_df))
-        acc = sum(true_pos) / max(num_labels, 1)
-        out_rows.append({'subject': subject, 'true_pos': sum(true_pos),
+        acc = accuracy_score(y_true=result_df['label'], y_pred=result_df['prediction'])
+        true_pos = sum(result_df['prediction'] == result_df['label'])
+        num_labels = len(result_df['label'])
+        out_rows.append({'subject': subject, 'true_pos': true_pos,
                          'num_labels': num_labels, 'accuracy': acc})
         print(f'{subject}: {acc:#.3}')
 
@@ -127,20 +131,8 @@ def evaluate_results(result_dir: Path,
     sum_labels = sum(row['num_labels'] for row in out_rows)
     micro_avg_acc = sum_true_pos / sum_labels
 
-    print(f'---------------------\nMicro-averaged accuracy: {micro_avg_acc:#.2}')
+    print(f'---------------------\nMicro-averaged accuracy: {micro_avg_acc:#.3}')
 
     if out_file is not None:
         out_df = pd.DataFrame(out_rows)
         out_df.to_csv(out_file, sep=',', encoding='utf-8')
-
-
-def get_pred(result_df: pd.DataFrame) -> List[bool]:
-    return [p for p in result_df['prediction'] if len(str(p)) == 1]
-
-
-def get_true_pos(result_df: pd.DataFrame) -> List[bool]:
-    return (result_df['prediction'] == result_df['label']).tolist()
-
-
-def get_accuracy(result_df: pd.DataFrame) -> float:
-    return sum(result_df['prediction'] == result_df['label']) / len(result_df)

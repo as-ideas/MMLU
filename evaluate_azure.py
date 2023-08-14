@@ -49,7 +49,6 @@ if __name__ == '__main__':
     parser.add_argument('--timeout', type=float, default=360, help='The timeout for api calls in seconds.')
     parser.add_argument('--retries', type=int, default=3, help='The number of retries.')
     args = parser.parse_args()
-    print(args)
 
     predict_function = AzurePredictor(engine=args.engine)
 
@@ -58,7 +57,7 @@ if __name__ == '__main__':
                     predict_function=predict_function,
                     k_shot=args.k_shot,
                     n_workers=args.n_workers,
-                    timeout_s=50,
-                    retries=3)
+                    timeout_s=args.timeout,
+                    retries=args.retries)
 
     evaluate_results(result_dir=Path(args.result_dir))
