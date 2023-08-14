@@ -27,7 +27,7 @@ class Dataset:
     def from_dir(cls, data_dir: Path, subject: str) -> 'Dataset':
         dev_file = Path(data_dir / 'dev' / f'{subject}_dev.csv')
         test_file = Path(data_dir / 'test' / f'{subject}_test.csv')
-        return Dataset.from_files(dev_file=dev_file, test_file=test_file, subject=subject)
+        return Dataset.from_files(subject=subject, dev_file=dev_file, test_file=test_file)
 
 
 def file_to_subject(file: Path) -> str:
