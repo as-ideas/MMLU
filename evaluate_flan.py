@@ -8,7 +8,6 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, T5ForConditionalG
 from mmlu.dataset import CHOICES
 from mmlu.evaluation import predict_dataset, evaluate_results
 
-
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
@@ -47,7 +46,9 @@ if __name__ == '__main__':
     model = AutoModelForSeq2SeqLM.from_pretrained(args.engine).to(device)
     tokenizer = AutoTokenizer.from_pretrained(args.engine)
     predict_function = FlanPredictor(model, tokenizer)
-    token_counter = lambda x: tokenizer(x, return_tensors='pt').input_ids.shape[-1]
+
+    def token_counter(prompt: str) -> int:
+        return tokenizer(prompt, return_tensors='pt').input_ids.shape[-1]
 
     predict_dataset(data_dir=Path(args.data_dir),
                     result_dir=Path(args.result_dir),
