@@ -49,7 +49,6 @@ if __name__ == '__main__':
     parser.add_argument('--timeout', type=float, default=360, help='The timeout for api calls in seconds.')
     parser.add_argument('--retries', type=int, default=3, help='The number of retries.')
     args = parser.parse_args()
-    print(args)
 
     predict_function = AzurePredictor(engine=args.engine)
 

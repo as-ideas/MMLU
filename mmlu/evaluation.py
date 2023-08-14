@@ -1,8 +1,10 @@
 from multiprocessing import Pool
 from pathlib import Path
 from typing import Callable, List, Optional
+from sklearn.metrics import accuracy_score
 
 import pandas as pd
+import sklearn.metrics
 from tqdm import tqdm
 
 from mmlu.dataset import get_subjects, Dataset, gen_prompt, read_or_create_result_df, file_to_subject
@@ -84,8 +86,11 @@ def predict_dataset(data_dir: Path,
                     result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
 
         result_df.to_csv(result_file, sep=',', encoding='utf-8', index=False)
-        tp, pred = sum(get_true_pos(result_df)), len(get_pred(result_df))
-        print(f'Accuracy: {get_accuracy(result_df):#.3} ({tp}/{pred})')
+        acc = accuracy_score(result_df['prediction'], result_df['label'])
+        true_pos = sum(result_df['prediction'] == result_df['label'])
+        num_labels = len(result_df['label'])
+
+        print(f'Accuracy: {acc:#.3} ({true_pos}/{num_labels})')
 
 
 def evaluate_results(result_dir: Path,
@@ -116,10 +121,10 @@ def evaluate_results(result_dir: Path,
     out_rows = []
     for subject in sorted(subject_to_file.keys()):
         result_df = pd.read_csv(subject_to_file[subject], sep=',', encoding='utf-8')
-        true_pos = get_true_pos(result_df)
-        num_labels = len(get_pred(result_df))
-        acc = sum(true_pos) / max(num_labels, 1)
-        out_rows.append({'subject': subject, 'true_pos': sum(true_pos),
+        acc = accuracy_score(result_df['prediction'], result_df['label'])
+        true_pos = sum(result_df['prediction'] == result_df['label'])
+        num_labels = len(result_df['label'])
+        out_rows.append({'subject': subject, 'true_pos': true_pos,
                          'num_labels': num_labels, 'accuracy': acc})
         print(f'{subject}: {acc:#.3}')
 
@@ -132,15 +137,3 @@ def evaluate_results(result_dir: Path,
     if out_file is not None:
         out_df = pd.DataFrame(out_rows)
         out_df.to_csv(out_file, sep=',', encoding='utf-8')
-
-
-def get_pred(result_df: pd.DataFrame) -> List[bool]:
-    return [p for p in result_df['prediction'] if len(str(p)) == 1]
-
-
-def get_true_pos(result_df: pd.DataFrame) -> List[bool]:
-    return (result_df['prediction'] == result_df['label']).tolist()
-
-
-def get_accuracy(result_df: pd.DataFrame) -> float:
-    return sum(result_df['prediction'] == result_df['label']) / len(result_df)
