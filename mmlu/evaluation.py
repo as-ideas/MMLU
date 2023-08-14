@@ -15,11 +15,11 @@ SAVE_STEPS = 50
 def predict_dataset(data_dir: Path,
                     result_dir: Path,
                     predict_function: Callable[[str], str],
-                    subjects: Optional[List[str]] = None,
                     k_shot: int = 0,
                     n_workers: int = 0,
                     timeout_s: int = 50,
                     retries: int = 3,
+                    subjects: Optional[List[str]] = None,
                     token_counter: Optional[Callable[[str], int]] = None,
                     max_tokens: Optional[int] = None):
     """
@@ -30,17 +30,17 @@ def predict_dataset(data_dir: Path,
         result_dir (Path): The directory where prediction results will be stored.
         predict_function (Callable[[str], str]): A callable function that takes a prompt
                                                  string as input and returns the prediction as a string.
-        subjects (Optional[List[str]], optional): A list of subjects from the dataset to be used for prediction.
-                                                  If None, all subjects in the dataset will be used. Defaults to None.
-        k_shot (int, optional): The number of examples for k-shot learning. Defaults to 0.
+        k_shot (int): The number of examples for k-shot learning. Defaults to 0.
         n_workers (int, optional): The number of worker processes to use for parallel prediction.
                                    If 0, prediction will be done in the main thread. Defaults to 0.
         timeout_s (int, optional): The timeout in seconds for each prediction job. Defaults to 50.
-        retries (int, optional): The number of times to retry a timed-out prediction job. Defaults to 3.
-        token_counter (Optional[Callable[[str], int]], optional): A callable function that takes a prompt string as
-                                                                  input and returns the number of tokens in it.
-                                                                  Defaults to None.
-        max_tokens (Optional[int], optional): The maximum number of tokens allowed in a prompt. Defaults to None.
+        retries (int): The number of times to retry a timed-out prediction job. Defaults to 3.
+        subjects (List[str], optional): A list of subjects from the dataset to be used for prediction.
+                                        If None, all subjects in the dataset will be used. Defaults to None.
+        token_counter (Callable[[str], int], optional): A callable function that takes a prompt string as
+                                                        input and returns the number of tokens in it.
+                                                        Defaults to None.
+        max_tokens (int, optional): The maximum number of tokens allowed in a prompt. Defaults to None.
 
     Returns:
         None: The function doesn't return any value directly, but saves the prediction results to the result_dir.
@@ -96,12 +96,12 @@ def evaluate_results(result_dir: Path,
 
     Args:
         result_dir (Path): The directory containing the prediction result files in CSV format (e.g., *_result.csv).
-        subjects (Optional[List[str]], optional): A list of subjects for which to evaluate the results.
-                                                  If None, all subjects found in result_dir will be evaluated.
-                                                  Defaults to None.
-        out_file (Optional[Path], optional): The file path where the evaluation results will be saved as a CSV file.
-                                             If None, the evaluation results will only be printed on the console.
-                                             Defaults to None.
+        subjects (List[str], optional): A list of subjects for which to evaluate the results.
+                                        If None, all subjects found in result_dir will be evaluated.
+                                        Defaults to None.
+        out_file (Path, optional): The file path where the evaluation results will be saved as a CSV file.
+                                   If None, the evaluation results will only be printed on the console.
+                                   Defaults to None.
 
     Returns:
         None: The function doesn't return any value directly but may save the evaluation results to out_file if provided.

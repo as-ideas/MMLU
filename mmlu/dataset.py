@@ -65,9 +65,9 @@ def gen_prompt(dataset: Dataset,
         token_counter (Callable[[str], int], optional): A callable function that takes a string as input and returns
                                                         the number of tokens in it. If None, the number of tokens
                                                         will be estimated by len(prompt) * 4. Defaults to None.
-        max_tokens (Optional[int], optional): The maximum number of tokens allowed in the generated prompt.
-                                              If the total tokens exceed this limit, the prompt will be truncated.
-                                              Defaults to None.
+        max_tokens (int, optional): The maximum number of tokens allowed in the generated prompt.
+                                    If the total tokens exceed this limit, the prompt will be truncated.
+                                    Defaults to None.
 
     Returns:
         str: The generated prompt as a string.
