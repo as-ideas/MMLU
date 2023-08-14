@@ -9,6 +9,9 @@ from mmlu.dataset import CHOICES
 from mmlu.evaluation import predict_dataset, evaluate_results
 
 
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+
 class FlanPredictor(Callable[[str], str]):
 
     def __init__(self, model: T5ForConditionalGeneration, tokenizer: T5TokenizerFast) -> None:
@@ -19,12 +22,13 @@ class FlanPredictor(Callable[[str], str]):
         self._choice_tokens = torch.tensor(self._choice_tokens).long()
 
     def __call__(self, prompt: str) -> str:
-        input_ids = self._tokenizer(prompt, return_tensors='pt').input_ids
-        decoder_input_ids = self._tokenizer('', return_tensors='pt').input_ids
+        input_ids = self._tokenizer(prompt, return_tensors='pt').input_ids.to(device)
+        decoder_input_ids = self._tokenizer('', return_tensors='pt').input_ids.to(device)
         decoder_input_ids = self._model._shift_right(decoder_input_ids)
-        logits = self._model(
-            input_ids=input_ids, decoder_input_ids=decoder_input_ids
-        ).logits.flatten()
+        with torch.no_grad():
+            logits = self._model(
+                input_ids=input_ids, decoder_input_ids=decoder_input_ids
+            ).logits.flatten().cpu()
         logits = logits[self._choice_tokens]
         pred_index = torch.argmax(logits)
         pred = CHOICES[int(pred_index)]
@@ -40,7 +44,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
 
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.engine)
+    model = AutoModelForSeq2SeqLM.from_pretrained(args.engine).to(device)
     tokenizer = AutoTokenizer.from_pretrained(args.engine)
     predict_function = FlanPredictor(model, tokenizer)
     token_counter = lambda x: tokenizer(x, return_tensors='pt').input_ids.shape[-1]
