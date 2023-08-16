@@ -12,7 +12,7 @@ def predict_random(prompt: str) -> str:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_dir', type=str, default='data')
+    parser.add_argument('--data_dir', type=str, default='data_de')
     parser.add_argument('--result_dir', type=str, default='results/random')
     parser.add_argument('--k_shot', type=int, default=0, help='The number of few-shot examples in the prompt.')
     args = parser.parse_args()

@@ -85,7 +85,7 @@ if __name__ == "__main__":
         subject_trans = translator(subject.replace('_', ' '))
         subjects_translated['subjects'][subject] = subject_trans
     with open(target_dir / 'subjects.json', 'w', encoding='utf-8') as f:
-        json.dump(subjects, f)
+        json.dump(subjects_translated, f)
 
     for i, subject in enumerate(subjects):
         print(f'Translate subject {subject} ({i}/{len(subjects)})')
