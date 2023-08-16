@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from tqdm import tqdm
 
-from mmlu.dataset import Dataset, get_subjects
+from mmlu.dataset import Dataset, get_subjects, DEFAULT_HEADER
 
 ENDPOINT = 'https://api.cognitive.microsofttranslator.com/translate'
 AZURE_KEY = os.getenv('AZURE_KEY')
@@ -72,11 +73,19 @@ def run_translation(df: pd.DataFrame, target_file: Path) -> None:
 if __name__ == "__main__":
     data_dir = Path('data')
     target_dir = Path('data_de')
-    (target_dir / 'dev').mkdir(parents=True, exist_ok=True)
-    (target_dir / 'test').mkdir(parents=True, exist_ok=True)
     translator = AzureTranslator(url=ENDPOINT, source_lang='en', target_lang='de', retries=3, timeout=30)
 
+    (target_dir / 'dev').mkdir(parents=True, exist_ok=True)
+    (target_dir / 'test').mkdir(parents=True, exist_ok=True)
     subjects = get_subjects(data_dir=data_dir)
+
+    print(f'Translate header and subject names, will dump the result to {target_dir / "subjects.json"}')
+    subjects_translated = {'header': translator(DEFAULT_HEADER), 'subjects': {}}
+    for subject in tqdm(subjects, total=len(subjects)):
+        subject_trans = translator(subject.replace('_', ' '))
+        subjects_translated['subjects'][subject] = subject_trans
+    with open(target_dir / 'subjects.json', 'w', encoding='utf-8') as f:
+        json.dump(subjects, f)
 
     for i, subject in enumerate(subjects):
         print(f'Translate subject {subject} ({i}/{len(subjects)})')
