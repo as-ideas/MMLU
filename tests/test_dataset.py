@@ -22,13 +22,20 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(5, len(dataset.dev_df))
         self.assertEqual('Why is the sky blue?', dataset.test_df.iloc[2, 0])
         self.assertEqual('Why is Mars red?', dataset.dev_df.iloc[4, 0])
+        expected_header = 'The following are multiple choice questions (with answers) about astronomy for testing.\n\n'
+        self.assertEqual(expected_header, dataset.prompt_header)
 
     def test_create_from_dir_de(self):
-        dataset = Dataset.from_dir(self.resources_path / 'en_test_data', 'astronomy_for_testing')
-        self.assertEqual(5, len(dataset.test_df))
+        dataset = Dataset.from_dir(self.resources_path / 'de_test_data', 'college_computer_science')
+        self.assertEqual(1, len(dataset.test_df))
         self.assertEqual(5, len(dataset.dev_df))
-        self.assertEqual('Why is the sky blue?', dataset.test_df.iloc[2, 0])
-        self.assertEqual('Why is Mars red?', dataset.dev_df.iloc[4, 0])
+        self.assertEqual('Der Access-Matrix-Ansatz für den Schutz hat die Schwierigkeit, dass',
+                         dataset.test_df.iloc[0, 0])
+        self.assertEqual('Welcher der folgenden regulären Ausdrücke entspricht (beschreibt denselben Satz '
+                         'von Zeichenfolgen wie) (a* + b)*(c + d)?', dataset.dev_df.iloc[0, 0])
+        expected_header = 'Im Folgenden finden Sie Multiple-Choice-Fragen (mit Antworten) zum ' \
+                          'Thema Hochschule Informatik.\n\n'
+        self.assertEqual(expected_header, dataset.prompt_header)
 
     def test_gen_prompt_default(self):
         dataset = Dataset.from_dir(data_dir=self.resources_path / 'en_test_data', subject='astronomy_for_testing')
