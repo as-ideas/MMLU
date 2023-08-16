@@ -27,9 +27,7 @@ class TestDataset(unittest.TestCase):
         self.assertEqual('Why is Mars red?', dataset.dev_df.iloc[4, 0])
 
     def test_gen_prompt(self):
-        dataset = Dataset.from_files(test_file=self.test_file,
-                                     dev_file=self.dev_file,
-                                     subject='astronomy_for_testing')
+        dataset = Dataset.from_dir(data_dir=self.data_path, subject='astronomy_for_testing')
 
         prompt_k0 = gen_prompt(dataset, index=0, k_shot=0)
         expected_k0 = read_txt(self.resources_path / 'astronomy_prompt_k0_expected.txt')
@@ -51,9 +49,7 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(expected_k5_max100, prompt_k5_max100)
 
     def test_get_label(self):
-        dataset = Dataset.from_files(test_file=self.test_file,
-                                     dev_file=self.dev_file,
-                                     subject='astronomy')
+        dataset = Dataset.from_dir(data_dir=self.data_path, subject='astronomy_for_testing')
         label = get_label(dataset, 0)
         self.assertEqual('A', label)
 
