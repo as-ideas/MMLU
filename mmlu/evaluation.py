@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from mmlu.dataset import get_subjects, Dataset, gen_prompt, read_or_create_result_df, file_to_subject
-from mmlu.threading import PredictionWithTimeout, PredictionWorker
+from mmlu.threading_utils import PredictionWithTimeout, PredictionWorker
 
 
 SAVE_STEPS = 50
