@@ -9,7 +9,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from tqdm import tqdm
 
-from mmlu.dataset import Dataset, get_subjects, DEFAULT_HEADER
+from mmlu.dataset import Dataset, get_subjects, DEFAULT_HEADER, DEFAULT_ANSWER
 
 ENDPOINT = 'https://api.cognitive.microsofttranslator.com/translate'
 AZURE_KEY = os.getenv('AZURE_KEY')
@@ -80,7 +80,9 @@ if __name__ == "__main__":
     subjects = get_subjects(data_dir=data_dir)
 
     print(f'Translate header and subject names, will dump the result to {target_dir / "subjects.json"}')
-    subjects_translated = {'header': translator(DEFAULT_HEADER), 'subjects': {}}
+    subjects_translated = {'header': translator(DEFAULT_HEADER),
+                           'answer': translator(DEFAULT_ANSWER),
+                           'subjects': {}}
     for subject in tqdm(subjects, total=len(subjects)):
         subject_trans = translator(subject.replace('_', ' '))
         subjects_translated['subjects'][subject] = subject_trans

@@ -7,12 +7,14 @@ import pandas as pd
 
 CHOICES = ['A', 'B', 'C', 'D']
 DEFAULT_HEADER = 'The following are multiple choice questions (with answers) about'
+DEFAULT_ANSWER = 'Answer'
 
 
 @dataclass
 class Dataset:
     subject: str
     prompt_header: str
+    prompt_answer: str
     dev_df: pd.DataFrame
     test_df: pd.DataFrame
 
@@ -26,11 +28,17 @@ class Dataset:
         dev_df = pd.read_csv(dev_file, header=None, sep=',', encoding='utf-8', dtype=str, na_filter=False)
         test_df = pd.read_csv(test_file, header=None, sep=',', encoding='utf-8', dtype=str, na_filter=False)
         prompt_header = f'{DEFAULT_HEADER} { subject.replace("_", " ")}.\n\n'
+        prompt_answer = DEFAULT_ANSWER
         if (data_dir / 'subjects.json').is_file():
             with open(data_dir / 'subjects.json', 'r', encoding='utf-8') as f:
                 subjects = json.load(f)
             prompt_header = f'{subjects["header"]} {subjects["subjects"][subject]}.\n\n'
-        return Dataset(test_df=test_df, dev_df=dev_df, subject=subject, prompt_header=prompt_header)
+            prompt_answer = subjects["answer"]
+        return Dataset(test_df=test_df,
+                       dev_df=dev_df,
+                       subject=subject,
+                       prompt_header=prompt_header,
+                       prompt_answer=prompt_answer)
 
 
 def file_to_subject(file: Path) -> str:
@@ -83,12 +91,18 @@ def gen_prompt(dataset: Dataset,
     if token_counter is None:
         token_counter = standard_token_counter
     prompt = dataset.prompt_header
-    question = _format_question(dataset.test_df, index, include_answer=False)
+    question = _format_question(df=dataset.test_df,
+                                index=index,
+                                prompt_answer=dataset.prompt_answer,
+                                include_answer=False)
     sum_tokens = token_counter(prompt) + token_counter(question) + 1
 
     # add training examples if enough tokens are left
     for k in range(k_shot):
-        example = _format_question(dataset.dev_df, k, include_answer=True)
+        example = _format_question(df=dataset.dev_df,
+                                   index=k,
+                                   prompt_answer=dataset.prompt_answer,
+                                   include_answer=True)
         sum_tokens += token_counter(example)
         if max_tokens is not None and sum_tokens >= max_tokens:
             break
@@ -116,11 +130,12 @@ def read_or_create_result_df(result_file: Path, dataset: Dataset) -> pd.DataFram
 
 def _format_question(df: pd.DataFrame,
                      index: int,
+                     prompt_answer: str,
                      include_answer=True):
     prompt = df.iloc[index, 0]
     for j, choice in enumerate(CHOICES):
         prompt += f'\n{choice}. {df.iloc[index, j+1]}'
-    prompt += '\nAnswer:'
+    prompt += f'\n{prompt_answer}:'
     if include_answer:
         prompt += f' {df.iloc[index, len(CHOICES)+1]}\n\n'
     return prompt

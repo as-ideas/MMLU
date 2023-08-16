@@ -59,6 +59,17 @@ class TestDataset(unittest.TestCase):
         expected_k5_max100 = read_txt(self.resources_path / 'en_test_expected' / 'astronomy_prompt_k5_maxtokens1300_expected.txt')
         self.assertEqual(expected_k5_max100, prompt_k5_max100)
 
+    def test_gen_prompt_de(self):
+        dataset = Dataset.from_dir(data_dir=self.resources_path / 'de_test_data', subject='college_computer_science')
+
+        prompt_k0 = gen_prompt(dataset, index=0, k_shot=0)
+        expected_k0 = read_txt(self.resources_path / 'de_test_expected' / 'college_computer_science_k0_expected.txt')
+        self.assertEqual(expected_k0, prompt_k0)
+
+        prompt_k2 = gen_prompt(dataset, index=0, k_shot=2)
+        expected_k2 = read_txt(self.resources_path / 'de_test_expected' / 'college_computer_science_k2_expected.txt')
+        self.assertEqual(expected_k2, prompt_k2)
+
     def test_get_label(self):
         dataset = Dataset.from_dir(data_dir=self.resources_path / 'en_test_data', subject='astronomy_for_testing')
         label = get_label(dataset, 0)
