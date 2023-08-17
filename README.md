@@ -32,7 +32,7 @@ python evaluate_azure.py --data_dir path-to-data --result_dir path-to-results --
 
 ## Evaluate your custom model <a id="evaluate-custom"></a>
 
-To evaluate a custom LLE simply use the following template and replace the predict_function by your own Callable:
+To evaluate a custom LLM simply use the following template and replace the predict_function by your own Callable:
 
 ```python
 from pathlib import Path
