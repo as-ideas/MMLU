@@ -1,3 +1,5 @@
+import argparse
+
 import json
 import os
 from pathlib import Path
@@ -11,9 +13,9 @@ from tqdm import tqdm
 
 from mmlu.dataset import Dataset, get_subjects, DEFAULT_HEADER, DEFAULT_ANSWER
 
-ENDPOINT = 'https://api.cognitive.microsofttranslator.com/translate'
+AZURE_ENDPOINT = os.getenv('AZURE_ENDPOINT', default='https://api.cognitive.microsofttranslator.com/translate')
+AZURE_REGION = os.getenv('AZURE_REGTION', default='germanywestcentral')
 AZURE_KEY = os.getenv('AZURE_KEY')
-AZURE_REGION = 'germanywestcentral'
 
 
 class AzureTranslator:
@@ -71,10 +73,20 @@ def run_translation(df: pd.DataFrame, target_file: Path) -> None:
 
 
 if __name__ == "__main__":
-    data_dir = Path('data')
-    target_dir = Path('data_de')
-    translator = AzureTranslator(url=ENDPOINT, source_lang='en', target_lang='de', retries=3, timeout=30)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', type=str, default='data')
+    parser.add_argument('--target_dir', type=str, help='Target directory to store translated data.')
+    parser.add_argument('--lang', type=str, help='Target language for translation.')
+    args = parser.parse_args()
+    print(args)
+    translator = AzureTranslator(url=AZURE_ENDPOINT,
+                                 source_lang='en',
+                                 target_lang=args.lang,
+                                 retries=3,
+                                 timeout=30)
 
+    target_dir = Path(args.target_dir)
+    data_dir = Path(args.data_dir)
     (target_dir / 'dev').mkdir(parents=True, exist_ok=True)
     (target_dir / 'test').mkdir(parents=True, exist_ok=True)
     subjects = get_subjects(data_dir=data_dir)
