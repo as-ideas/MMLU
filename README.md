@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
 ## Languages other than English
 
-### Evaluating on other Languages
+### Evaluating on other languages
 
 
 We will provide additional datasets (starting with German) that are translated via Azure and can be used ad-hoc with the standard evaluation script - simply point to the translated data.
@@ -82,7 +82,7 @@ For German, the ```subjects.json``` looks like:
 }
 ```
 
-### Translating the dataset to another Language
+### Translating the dataset to another language
 
 You can use the translation script that calls the Azure translation service:
 
