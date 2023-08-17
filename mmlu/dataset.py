@@ -27,13 +27,13 @@ class Dataset:
         test_file = Path(data_dir / 'test' / f'{subject}_test.csv')
         dev_df = pd.read_csv(dev_file, header=None, sep=',', encoding='utf-8', dtype=str, na_filter=False)
         test_df = pd.read_csv(test_file, header=None, sep=',', encoding='utf-8', dtype=str, na_filter=False)
-        prompt_header = f'{DEFAULT_HEADER} { subject.replace("_", " ")}.\n\n'
+        prompt_header = f'{DEFAULT_HEADER} {subject.replace("_", " ")}.\n\n'
         prompt_answer = DEFAULT_ANSWER
         if (data_dir / 'subjects.json').is_file():
             with open(data_dir / 'subjects.json', 'r', encoding='utf-8') as f:
                 subjects = json.load(f)
             prompt_header = f'{subjects["header"]} {subjects["subjects"][subject]}.\n\n'
-            prompt_answer = subjects["answer"]
+            prompt_answer = subjects['answer']
         return Dataset(test_df=test_df,
                        dev_df=dev_df,
                        subject=subject,
