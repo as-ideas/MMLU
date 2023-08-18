@@ -32,7 +32,7 @@ python evaluate_azure.py --data_dir path-to-data --result_dir path-to-results --
 
 ## Evaluate your custom model <a id="evaluate-custom"></a>
 
-To evaluate a custom LLE simply use the following template and replace the predict_function by your own Callable:
+To evaluate a custom LLM simply use the following template and replace the predict_function by your own Callable:
 
 ```python
 from pathlib import Path
@@ -53,7 +53,51 @@ if __name__ == '__main__':
     evaluate_results(result_dir=result_dir)
 ```
 
+## Languages other than English
+
+### Evaluating on other languages
+
+
+We will provide additional datasets (starting with German) that are translated via Azure and can be used ad-hoc with the standard evaluation script - simply point to the translated data.
+
+A translated dataset is formatted in the same way as the original dataset but contains an additional file ```subjects.json``` that includes the translated prompt header and subjects:
+```
+data_de/
+├── dev/
+├── test/
+├── subjects.json
+```
+
+For German, the ```subjects.json``` looks like:
+
+```json
+{
+  "header": "Im Folgenden finden Sie Multiple-Choice-Fragen (mit Antworten) zum Thema",
+  "answer": "Antwort", 
+  "subjects": {
+    "abstract_algebra": "abstrakte Algebra", 
+    "astronomy": "Astronomie",
+    ...
+  }
+}
+```
+
+### Translating the dataset to another language
+
+You can use the translation script that calls the Azure translation service:
+
+```bash
+export AZURE_ENDPOINT=your-azure-translation-endpoint
+export AZURE_KEY=your-azure-key
+export AZURE_REGION=your-azure-region
+PYTHONPATH=. python mmlu/translate --data_dir data --target_dir /tmp/data_de --lang de
+```
+
+The translated data will be stored in ```target_dir``` in the format described above. Note that only ```dev``` and ```test``` data will be translated.
+
 
 ## References
 
 * [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
+* [Original Implementation](https://github.com/hendrycks/test)
+

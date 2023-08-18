@@ -1,0 +1,8 @@
+Im Folgenden finden Sie Multiple-Choice-Fragen (mit Antworten) zum Thema Hochschule Informatik.
+
+Der Access-Matrix-Ansatz für den Schutz hat die Schwierigkeit, dass
+A. Die Matrix ist, wenn sie direkt gespeichert wird, groß und kann umständlich zu verwalten sein
+B. sie ist nicht in der Lage, komplexe Schutzanforderungen auszudrücken
+C. Die Entscheidung, ob ein Prozess Zugriff auf eine Ressource hat, ist unentscheidbar
+D. Es gibt keine Möglichkeit auszudrücken, wer berechtigt ist, die Zugriffsmatrix selbst zu ändern
+Antwort:

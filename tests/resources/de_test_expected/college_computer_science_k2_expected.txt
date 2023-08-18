@@ -1,0 +1,25 @@
+Im Folgenden finden Sie Multiple-Choice-Fragen (mit Antworten) zum Thema Hochschule Informatik.
+
+Welcher der folgenden regulären Ausdrücke entspricht (beschreibt denselben Satz von Zeichenfolgen wie) (a* + b)*(c + d)?
+A. a*(c + d)+ b(c + d)
+B. a*(c + d)* + b(c + d)*
+C. a*(c + d)+ b*(c + d)
+D. (a + b)*c +(a + b)*d
+Antwort: D
+
+Eine bestimmte RISC-Maschine mit Pipeline verfügt über 8 Allzweckregister R0, R1, . . . , R7 und unterstützt die folgenden Operationen.
+ADD Rs1, Rs2, Rd Addieren Sie Rs1 zu Rs2 und setzen Sie die Summe in Rd ein
+MUL Rs1, Rs2, Rd Multiplizieren Sie Rs1 mit Rs2 und setzen Sie das Produkt in Rd
+Ein Vorgang dauert normalerweise einen Zyklus. Ein Vorgang dauert jedoch zwei Zyklen, wenn er ein Ergebnis erzeugt, das für den unmittelbar folgenden Vorgang in einer Vorgangssequenz erforderlich ist. Betrachten Sie den Ausdruck AB + ABC + BC, wobei sich die Variablen A, B, C in den Registern R0, R1, R2 befinden. Wenn der Inhalt dieser drei Register nicht geändert werden darf, was ist dann die minimale Anzahl von Taktzyklen, die für eine Operationssequenz erforderlich sind, die den Wert von AB + ABC + BC berechnet?
+A. 5
+B. 6
+C. 7
+D. 8
+Antwort: B
+
+Der Access-Matrix-Ansatz für den Schutz hat die Schwierigkeit, dass
+A. Die Matrix ist, wenn sie direkt gespeichert wird, groß und kann umständlich zu verwalten sein
+B. sie ist nicht in der Lage, komplexe Schutzanforderungen auszudrücken
+C. Die Entscheidung, ob ein Prozess Zugriff auf eine Ressource hat, ist unentscheidbar
+D. Es gibt keine Möglichkeit auszudrücken, wer berechtigt ist, die Zugriffsmatrix selbst zu ändern
+Antwort:
