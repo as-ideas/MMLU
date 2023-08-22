@@ -35,9 +35,6 @@ class LLama2Predictor(Callable[[str], str]):
                                      skip_special_tokens=True,
                                      clean_up_tokenization_spaces=False)[0]
         out = out[-1:]
-        print(prompt)
-        print(out)
-        print('*****************')
         return out
 
 
