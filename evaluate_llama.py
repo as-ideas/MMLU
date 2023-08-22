@@ -21,6 +21,7 @@ class LLama2Predictor(Callable[[str], str]):
         self._choice_tokens = [self._tokenizer(c).input_ids[0] for c in CHOICES]
         choice_ids = [tokenizer(c).input_ids[-1] for c in CHOICES]
         logit_bias = {c_id: 200 for c_id in choice_ids}
+        # Add 200 to logits for choice tokens ['A',  'B', 'C', 'D']
         self._logits_processor = LogitBiasProcessor(logit_bias=logit_bias)
         self._choice_tokens = torch.tensor(self._choice_tokens).long()
 
