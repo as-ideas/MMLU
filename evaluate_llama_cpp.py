@@ -26,11 +26,12 @@ class LLamaCPPPredictor(Callable[[str], str]):
         data = {
             'prompt': prompt,
             'n_predict': 1,
-            'logit_bias': self._logit_bias
+            'temp': 0.,
+            'top_p': 1
         }
         response = requests.post(URL_PREDICT, headers=HEADERS, json=data)
         out = json.loads(response.text)['content'][-1]
-        print(out)
+        print(f'***{json.loads(response.text)["content"]}***')
         return out
 
 
