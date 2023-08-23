@@ -31,7 +31,6 @@ class LLamaCPPPredictor(Callable[[str], str]):
         }
         response = requests.post(URL_PREDICT, headers=HEADERS, json=data)
         out = json.loads(response.text)['content'][-1]
-        print(f'***{json.loads(response.text)["content"]}***')
         return out
 
 
