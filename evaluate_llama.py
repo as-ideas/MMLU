@@ -63,6 +63,6 @@ if __name__ == '__main__':
                     timeout_s=0,
                     retries=0,
                     token_counter=token_counter,
-                    max_tokens=4192)
+                    max_tokens=4096)
 
     evaluate_results(result_dir=Path(args.result_dir))
