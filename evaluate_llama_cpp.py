@@ -26,7 +26,7 @@ class LLamaCPPPredictor(Callable[[str], str]):
         data = {
             'prompt': prompt,
             'n_predict': 1,
-            'temp': 0.,
+            'temperature': 0.,
             'top_p': 1
         }
         response = requests.post(URL_PREDICT, headers=HEADERS, json=data)
